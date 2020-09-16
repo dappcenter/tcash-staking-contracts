@@ -20,11 +20,11 @@ contract ProtocolFeeVault is Claimable, ReentrancyGuard, IProtocolFeeVault
     using ERC20SafeTransfer for address;
     using MathUint          for uint;
 
-    constructor(address _lrcAddress)
+    constructor(address _tokenAddress)
         Claimable()
     {
-        require(_lrcAddress != address(0), "ZERO_ADDRESS");
-        lrcAddress = _lrcAddress;
+        require(_tokenAddress != address(0), "ZERO_ADDRESS");
+        tokenAddress = _tokenAddress;
     }
 
     function updateSettings(
@@ -52,9 +52,9 @@ contract ProtocolFeeVault is Claimable, ReentrancyGuard, IProtocolFeeVault
     {
         require(amount > 0, "ZERO_VALUE");
         require(msg.sender == userStakingPoolAddress, "UNAUTHORIZED");
-        lrcAddress.safeTransferAndVerify(userStakingPoolAddress, amount);
+        tokenAddress.safeTransferAndVerify(userStakingPoolAddress, amount);
         claimedReward = claimedReward.add(amount);
-        emit LRCClaimed(amount);
+        emit TOKENClaimed(amount);
     }
 
     function getProtocolFeeStats()
@@ -63,6 +63,6 @@ contract ProtocolFeeVault is Claimable, ReentrancyGuard, IProtocolFeeVault
         override
         returns (uint)
     {
-        return ERC20(lrcAddress).balanceOf(address(this));
+        return ERC20(tokenAddress).balanceOf(address(this));
     }
 }

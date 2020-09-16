@@ -6,15 +6,15 @@ pragma solidity ^0.7.0;
 /// @title IProtocolFeeVault
 /// @dev This smart contract manages the distribution of protocol fees.
 ///     100% of them can be withdrawn to the UserStakingPool contract
-///     to reward LRC stakers
+///     to reward ERC-20 stakers
 abstract contract IProtocolFeeVault
 {
     address public userStakingPoolAddress;
-    address public lrcAddress;
+    address public tokenAddress;
 
     uint claimedReward;
 
-    event LRCClaimed(uint amount);
+    event TOKENClaimed(uint amount);
     event SettingsUpdated(uint time);
 
     /// @dev Sets depdending contract address. All these addresses can be zero.
@@ -25,15 +25,15 @@ abstract contract IProtocolFeeVault
         external
         virtual;
 
-    /// @dev Claims LRC as staking reward to the IUserStakingPool contract.
+    /// @dev Claims ERC2-TOKEN as staking reward to the IUserStakingPool contract.
     ///      Note that this function can only be called by
     ///      the IUserStakingPool contract.
     ///
-    /// @param amount The amount of LRC to be claimed.
+    /// @param amount The amount of ERC2-TOKEN to be claimed.
     function claimStakingReward(uint amount) external virtual;
 
     /// @dev Returns some global stats regarding fees.
-    /// @return remainingReward The remaining amount of LRC as staking reward.
+    /// @return remainingReward The remaining amount of ERC2-TOKEN as staking reward.
     function getProtocolFeeStats()
         public
         view

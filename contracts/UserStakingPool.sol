@@ -19,7 +19,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     using MathUint          for uint;
 
     struct Staking {
-        uint   balance;        // Total amount of LRC staked or rewarded
+        uint   balance;        // Total amount of TOKEN staked or rewarded
         uint64 depositedAt;
         uint64 claimedAt;      // timestamp from which more points will be accumulated
     }
@@ -27,11 +27,11 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     Staking public total;
     mapping (address => Staking) public stakings;
 
-    constructor(address _lrcAddress)
+    constructor(address _tokenAddress)
         Claimable()
     {
-        require(_lrcAddress != address(0), "ZERO_ADDRESS");
-        lrcAddress = _lrcAddress;
+        require(_tokenAddress != address(0), "ZERO_ADDRESS");
+        tokenAddress = _tokenAddress;
     }
 
     function setProtocolFeeVault(address _protocolFeeVaultAddress)
@@ -78,8 +78,8 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     {
         require(amount > 0, "ZERO_VALUE");
 
-        // Lets trandfer LRC first.
-        lrcAddress.safeTransferFromAndVerify(msg.sender, address(this), amount);
+        // Lets trandfer TOKEN first.
+        tokenAddress.safeTransferFromAndVerify(msg.sender, address(this), amount);
 
         Staking storage user = stakings[msg.sender];
 
@@ -115,7 +115,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
 
         total.balance = balance;
 
-        emit LRCStaked(msg.sender, amount);
+        emit TOKENStaked(msg.sender, amount);
     }
 
     function withdraw(uint amount)
@@ -144,10 +144,10 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
             delete stakings[msg.sender];
         }
 
-        // transfer LRC to user
-        lrcAddress.safeTransferAndVerify(msg.sender, _amount);
+        // transfer TOKEN to user
+        tokenAddress.safeTransferAndVerify(msg.sender, _amount);
 
-        emit LRCWithdrawn(msg.sender, _amount);
+        emit TOKENWithdrawn(msg.sender, _amount);
     }
 
     function claim()
@@ -186,7 +186,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
             user.balance = user.balance.add(claimedAmount);
             user.claimedAt = uint64(block.timestamp);
         }
-        emit LRCRewarded(msg.sender, claimedAmount);
+        emit TOKENRewarded(msg.sender, claimedAmount);
     }
 
     function getUserWithdrawalWaitTime(address user)

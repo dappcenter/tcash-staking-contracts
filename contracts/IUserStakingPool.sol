@@ -4,7 +4,7 @@ pragma solidity ^0.7.0;
 
 
 /// @title IUserStakingPool
-/// @dev This contract manages staked LRC tokens and their rewards.
+/// @dev This contract manages staked ERC2-TOKEN tokens and their rewards.
 ///      WARNING: sending tokens directly to this contract will result in all
 ///      tokens to be lost.
 abstract contract IUserStakingPool
@@ -12,16 +12,16 @@ abstract contract IUserStakingPool
     uint public constant MIN_CLAIM_DELAY        = 90 days;
     uint public constant MIN_WITHDRAW_DELAY     = 90 days;
 
-    address public lrcAddress;
+    address public tokenAddress;
     address public protocolFeeVaultAddress;
 
     uint    public numAddresses;
 
     event ProtocolFeeVaultChanged (address feeVaultAddress);
 
-    event LRCStaked       (address indexed user,  uint amount);
-    event LRCWithdrawn    (address indexed user,  uint amount);
-    event LRCRewarded     (address indexed user,  uint amount);
+    event TOKENStaked       (address indexed user,  uint amount);
+    event TOKENWithdrawn    (address indexed user,  uint amount);
+    event TOKENRewarded     (address indexed user,  uint amount);
 
     /// @dev Sets a new IProtocolFeeVault address, only callable by the owner.
     /// @param _protocolFeeVaultAddress The new IProtocolFeeVault address.
@@ -29,7 +29,7 @@ abstract contract IUserStakingPool
         external
         virtual;
 
-    /// @dev Returns the total number of LRC staked.
+    /// @dev Returns the total number of TOKEN staked.
     function getTotalStaking()
         public
         virtual
@@ -38,10 +38,10 @@ abstract contract IUserStakingPool
 
     /// @dev Returns information related to a specific user.
     /// @param user The user address.
-    /// @return withdrawalWaitTime Time in seconds that the user has to wait before any LRC can be withdrawn.
-    /// @return rewardWaitTime Time in seconds that the user has to wait before any LRC reward can be claimed.
-    /// @return balance The amount of LRC staked or rewarded.
-    /// @return pendingReward The amount of LRC reward claimable.
+    /// @return withdrawalWaitTime Time in seconds that the user has to wait before any TOKEN can be withdrawn.
+    /// @return rewardWaitTime Time in seconds that the user has to wait before any TOKEN reward can be claimed.
+    /// @return balance The amount of TOKEN staked or rewarded.
+    /// @return pendingReward The amount of TOKEN reward claimable.
     function getUserStaking(address user)
         public
         virtual
@@ -53,22 +53,22 @@ abstract contract IUserStakingPool
             uint pendingReward
         );
 
-    /// @dev Users call this function stake certain amount of LRC.
-    ///      Note that transfering LRC directly to this contract will lost those LRC!!!
-    /// @param amount The amount of LRC to stake.
+    /// @dev Users call this function stake certain amount of TOKEN.
+    ///      Note that transfering TOKEN directly to this contract will lost those TOKEN!!!
+    /// @param amount The amount of TOKEN to stake.
     function stake(uint amount)
         external
         virtual;
 
-    /// @dev Users call this funciton to withdraw staked LRC.
-    /// @param amount The amount of LRC to withdraw.
+    /// @dev Users call this funciton to withdraw staked TOKEN.
+    /// @param amount The amount of TOKEN to withdraw.
     function withdraw(uint amount)
         external
         virtual;
 
-    /// @dev Users call this funciton to claim all his/her LRC reward. The claimed LRC
+    /// @dev Users call this funciton to claim all his/her TOKEN reward. The claimed TOKEN
     ///      will be staked again automatically.
-    /// @param claimedAmount The amount of LRC claimed.
+    /// @param claimedAmount The amount of TOKEN claimed.
     function claim()
         external
         virtual
