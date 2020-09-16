@@ -4,7 +4,6 @@ pragma solidity ^0.7.0;
 
 
 /// @title AddressSet
-/// @author Daniel Wang - <daniel@loopring.org>
 contract AddressSet
 {
     struct Set

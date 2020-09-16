@@ -4,7 +4,6 @@ pragma solidity ^0.7.0;
 
 
 /// @title ReentrancyGuard
-/// @author Brecht Devos - <brecht@loopring.org>
 /// @dev Exposes a modifier that guards a function against reentrancy
 ///      Changing the value of the same storage value multiple times in a transaction
 ///      is cheap (starting from Istanbul) so there is no need to minimize

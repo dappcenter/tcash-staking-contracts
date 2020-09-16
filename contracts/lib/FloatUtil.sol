@@ -6,7 +6,6 @@ import "./MathUint.sol";
 
 
 /// @title Utility Functions for floats
-/// @author Brecht Devos - <brecht@loopring.org>
 library FloatUtil
 {
     using MathUint for uint;

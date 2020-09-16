@@ -4,7 +4,6 @@ pragma solidity ^0.7.0;
 
 
 /// @title Utility Functions for uint
-/// @author Daniel Wang - <daniel@loopring.org>
 library MathUint
 {
     using MathUint for uint;

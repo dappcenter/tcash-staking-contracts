@@ -3,11 +3,11 @@
 pragma solidity ^0.7.0;
 
 
-/// @title IProtocolFeeVault
+/// @title IProviderVault
 /// @dev This smart contract manages the distribution of protocol fees.
 ///     100% of them can be withdrawn to the UserStakingPool contract
 ///     to reward ERC-20 stakers
-abstract contract IProtocolFeeVault
+abstract contract IProviderVault
 {
     address public userStakingPoolAddress;
     address public tokenAddress;
@@ -32,9 +32,8 @@ abstract contract IProtocolFeeVault
     /// @param amount The amount of ERC2-TOKEN to be claimed.
     function claimStakingReward(uint amount) external virtual;
 
-    /// @dev Returns some global stats regarding fees.
-    /// @return remainingReward The remaining amount of ERC2-TOKEN as staking reward.
-    function getProtocolFeeStats()
+    /// @dev Returns remainingReward The remaining amount of ERC2-TOKEN as staking reward.
+    function getRemainingReward()
         public
         view
         virtual

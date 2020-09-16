@@ -5,7 +5,6 @@ pragma solidity ^0.7.0;
 
 /// @title ERC20 safe transfer
 /// @dev see https://github.com/sec-bit/badERC20Fix
-/// @author Brecht Devos - <brecht@loopring.org>
 library ERC20SafeTransfer
 {
     function safeTransferAndVerify(

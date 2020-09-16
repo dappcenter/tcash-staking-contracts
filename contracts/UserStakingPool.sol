@@ -3,7 +3,7 @@
 
 pragma solidity ^0.7.0;
 
-import "./lib/IProtocolFeeVault.sol";
+import "./lib/IProviderVault.sol";
 import "./lib/Claimable.sol";
 import "./lib/ERC20.sol";
 import "./lib/ERC20SafeTransfer.sol";
@@ -15,6 +15,9 @@ import "./IUserStakingPool.sol";
 /// @title An Implementation of IUserStakingPool.
 contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
 {
+    uint public constant MIN_CLAIM_DELAY        = 90 days;
+    uint public constant MIN_WITHDRAW_DELAY     = 90 days;
+
     using ERC20SafeTransfer for address;
     using MathUint          for uint;
 
@@ -34,7 +37,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
         tokenAddress = _tokenAddress;
     }
 
-    function setProtocolFeeVault(address _protocolFeeVaultAddress)
+    function setProviderVault(address _protocolFeeVaultAddress)
         external
         override
         nonReentrant
@@ -42,7 +45,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     {
         // Allow zero-address
         protocolFeeVaultAddress = _protocolFeeVaultAddress;
-        emit ProtocolFeeVaultChanged(protocolFeeVaultAddress);
+        emit ProviderVaultChanged(protocolFeeVaultAddress);
     }
 
     function getTotalStaking()
@@ -174,7 +177,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
         (totalPoints, userPoints, claimedAmount) = getUserPendingReward(msg.sender);
 
         if (claimedAmount > 0) {
-            IProtocolFeeVault(protocolFeeVaultAddress).claimStakingReward(claimedAmount);
+            IProviderVault(protocolFeeVaultAddress).claimStakingReward(claimedAmount);
 
             total.balance = total.balance.add(claimedAmount);
 
@@ -240,9 +243,9 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
         if (protocolFeeVaultAddress != address(0) &&
             totalPoints != 0 &&
             userPoints != 0) {
-             pendingReward = IProtocolFeeVault(
+             pendingReward = IProviderVault(
                 protocolFeeVaultAddress
-            ).getProtocolFeeStats();
+            ).getRemainingReward();
             pendingReward = pendingReward.mul(userPoints) / totalPoints;
         }
     }

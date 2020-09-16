@@ -10,10 +10,10 @@ import "./lib/Claimable.sol";
 import "./lib/ERC20SafeTransfer.sol";
 import "./lib/MathUint.sol";
 import "./lib/ReentrancyGuard.sol";
-import "./lib/IProtocolFeeVault.sol";
+import "./lib/IProviderVault.sol";
 
-/// @title An Implementation of IProtocolFeeVault.
-contract ProtocolFeeVault is Claimable, ReentrancyGuard, IProtocolFeeVault
+/// @title An Implementation of IProviderVault.
+contract ProviderVault is Claimable, ReentrancyGuard, IProviderVault
 {
     using AddressUtil       for address;
     using AddressUtil       for address payable;
@@ -57,7 +57,7 @@ contract ProtocolFeeVault is Claimable, ReentrancyGuard, IProtocolFeeVault
         emit TOKENClaimed(amount);
     }
 
-    function getProtocolFeeStats()
+    function getRemainingReward()
         public
         view
         override

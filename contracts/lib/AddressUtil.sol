@@ -4,8 +4,6 @@ pragma solidity ^0.7.0;
 
 
 /// @title Utility Functions for addresses
-/// @author Daniel Wang - <daniel@loopring.org>
-/// @author Brecht Devos - <brecht@loopring.org>
 library AddressUtil
 {
     using AddressUtil for *;
