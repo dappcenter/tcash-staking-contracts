@@ -14,12 +14,25 @@ abstract contract IProviderVault
 
     uint claimedReward;
 
+    event TOKENDeposited(uint amount);
+    event TOKENWithdrawn(uint amount);
     event TOKENClaimed(uint amount);
     event SettingsUpdated(uint time);
 
+    /// @dev Deposit tokens to the Vault.
+    function deposit(uint _amount)
+        external
+        virtual;
+
+    /// @dev Provider call this funciton to withdraw TOKEN.
+    /// @param amount The amount of TOKEN to withdraw.
+    function withdraw(uint amount)
+        external
+        virtual;
+
     /// @dev Sets depdending contract address. All these addresses can be zero.
     /// @param _userStakingPoolAddress The address of the user staking pool.
-    function updateSettings(
+    function updateStakingPool(
         address _userStakingPoolAddress
         )
         external

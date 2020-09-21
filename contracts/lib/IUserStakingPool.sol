@@ -11,19 +11,19 @@ abstract contract IUserStakingPool
 {
 
     address public tokenAddress;
-    address public protocolFeeVaultAddress;
+    address public providerVaultAddress;
 
     uint    public numAddresses;
 
-    event ProviderVaultChanged (address feeVaultAddress);
+    event ProviderVaultChanged (address providerVaultAddress);
 
     event TOKENStaked       (address indexed user,  uint amount);
     event TOKENWithdrawn    (address indexed user,  uint amount);
     event TOKENRewarded     (address indexed user,  uint amount);
 
     /// @dev Sets a new IProviderVault address, only callable by the owner.
-    /// @param _protocolFeeVaultAddress The new IProviderVault address.
-    function setProviderVault(address _protocolFeeVaultAddress)
+    /// @param _providerVaultAddress The new IProviderVault address.
+    function setProviderVault(address _providerVaultAddress)
         external
         virtual;
 

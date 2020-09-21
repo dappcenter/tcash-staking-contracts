@@ -27,7 +27,30 @@ contract ProviderVault is Claimable, ReentrancyGuard, IProviderVault
         tokenAddress = _tokenAddress;
     }
 
-    function updateSettings(
+    function deposit(
+        uint amount
+        )
+        external
+        override
+        nonReentrant
+    {
+        require(amount > 0, "ZERO_VALUE");
+        tokenAddress.safeTransferFromAndVerify(msg.sender, address(this), amount);
+        emit TOKENDeposited(amount);
+    }
+
+    function withdraw(uint amount)
+        external
+        override
+        nonReentrant
+        onlyOwner
+    {
+        require(amount > 0, "ZERO_VALUE");
+        tokenAddress.safeTransferAndVerify(msg.sender, amount);
+        emit TOKENWithdrawn(amount);
+    }
+
+    function updateStakingPool(
         address _userStakingPoolAddress
         )
         external

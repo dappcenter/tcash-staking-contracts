@@ -9,15 +9,12 @@ import "./lib/ERC20.sol";
 import "./lib/ERC20SafeTransfer.sol";
 import "./lib/MathUint.sol";
 import "./lib/ReentrancyGuard.sol";
-import "./IUserStakingPool.sol";
+import "./lib/IUserStakingPool.sol";
 
 
 /// @title An Implementation of IUserStakingPool.
 contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
 {
-    uint public constant MIN_CLAIM_DELAY        = 90 days;
-    uint public constant MIN_WITHDRAW_DELAY     = 90 days;
-
     using ERC20SafeTransfer for address;
     using MathUint          for uint;
 
@@ -29,23 +26,29 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
 
     Staking public total;
     mapping (address => Staking) public stakings;
+    uint public claim_delay;
+    uint public withdraw_delay;
 
-    constructor(address _tokenAddress)
+    constructor(address _tokenAddress,
+        uint _claim_delay,
+        uint _withdraw_delay)
         Claimable()
     {
         require(_tokenAddress != address(0), "ZERO_ADDRESS");
         tokenAddress = _tokenAddress;
+        claim_delay = _claim_delay;
+        withdraw_delay = _withdraw_delay;
     }
 
-    function setProviderVault(address _protocolFeeVaultAddress)
+    function setProviderVault(address _providerVaultAddress)
         external
         override
         nonReentrant
         onlyOwner
     {
         // Allow zero-address
-        protocolFeeVaultAddress = _protocolFeeVaultAddress;
-        emit ProviderVaultChanged(protocolFeeVaultAddress);
+        providerVaultAddress = _providerVaultAddress;
+        emit ProviderVaultChanged(providerVaultAddress);
     }
 
     function getTotalStaking()
@@ -129,7 +132,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
         require(getUserWithdrawalWaitTime(msg.sender) == 0, "NEED_TO_WAIT");
 
         // automatical claim when possible
-        if (protocolFeeVaultAddress != address(0) &&
+        if (providerVaultAddress != address(0) &&
             getUserClaimWaitTime(msg.sender) == 0) {
             claimReward();
         }
@@ -163,12 +166,11 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     }
 
     // -- Private Function --
-
     function claimReward()
         private
         returns (uint claimedAmount)
     {
-        require(protocolFeeVaultAddress != address(0), "ZERO_ADDRESS");
+        require(providerVaultAddress != address(0), "ZERO_ADDRESS");
         require(getUserClaimWaitTime(msg.sender) == 0, "NEED_TO_WAIT");
 
         uint totalPoints;
@@ -177,7 +179,7 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
         (totalPoints, userPoints, claimedAmount) = getUserPendingReward(msg.sender);
 
         if (claimedAmount > 0) {
-            IProviderVault(protocolFeeVaultAddress).claimStakingReward(claimedAmount);
+            IProviderVault(providerVaultAddress).claimStakingReward(claimedAmount);
 
             total.balance = total.balance.add(claimedAmount);
 
@@ -199,9 +201,9 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     {
         uint depositedAt = stakings[user].depositedAt;
         if (depositedAt == 0) {
-            return MIN_WITHDRAW_DELAY;
+            return withdraw_delay;
         } else {
-            uint time = depositedAt + MIN_WITHDRAW_DELAY;
+            uint time = depositedAt + withdraw_delay;
             return (time <= block.timestamp) ? 0 : time.sub(block.timestamp);
         }
     }
@@ -213,9 +215,9 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
     {
         uint claimedAt = stakings[user].claimedAt;
         if (claimedAt == 0) {
-            return MIN_CLAIM_DELAY;
+            return claim_delay;
         } else {
-            uint time = stakings[user].claimedAt + MIN_CLAIM_DELAY;
+            uint time = stakings[user].claimedAt + claim_delay;
             return (time <= block.timestamp) ? 0 : time.sub(block.timestamp);
         }
     }
@@ -240,11 +242,11 @@ contract UserStakingPool is Claimable, ReentrancyGuard, IUserStakingPool
             userPoints = totalPoints;
         }
 
-        if (protocolFeeVaultAddress != address(0) &&
+        if (providerVaultAddress != address(0) &&
             totalPoints != 0 &&
             userPoints != 0) {
              pendingReward = IProviderVault(
-                protocolFeeVaultAddress
+                providerVaultAddress
             ).getRemainingReward();
             pendingReward = pendingReward.mul(userPoints) / totalPoints;
         }
